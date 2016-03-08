@@ -25,7 +25,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.alfresco.custom.constraint.Msg;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,73 +43,80 @@ public class DatabaseImpl implements Database {
 	private String user;
 	private String pwd;
 
-	private Msg msg;
 	private Connection conn = null;
 	
-	public DatabaseImpl() {
-		msg = Msg.getInstance();
-	}
-
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#executeQuery(String)
+	 * @see org.alfresco.custom.database.Database#executeQuery(String)
 	 */
 	@Override
 	public List<String> executeQuery(String query) {
 		List<String> allowedValues = new ArrayList<String>();
-
+		
 		this.getConnetion();
-
+		
 		Statement stmt = null;
 		ResultSet rs;
 
 		try {
 			stmt = this.conn.createStatement();
 			rs = stmt.executeQuery(query);
-
+			
+			logger.debug("SQL executed: " + query );
+			
+			int count = 0;
 			while (rs.next()) {
 				String str = rs.getString(1);
 				allowedValues.add(str);
+				count++;
 			}
-
-			Object[] obj = new Object[] {query, allowedValues.size()};
-			logger.debug(msg.getMessage(Msg.SUCCESS_EXECUTE_QUERY, obj));
+			
+			logger.debug("The query return " + count + " values");
 		} catch (SQLException e) {
-			logger.error(msg.getMessage(Msg.ERROR_EXECUTE_QUERY, query));
+			logger.error("Error when try to execute query [" + query + "]");
 			e.printStackTrace();
 		} finally {
 			try {
 				stmt.close();
 				conn.close();
 			} catch (SQLException e) {
-				logger.error(msg.getMessage(Msg.ERROR_CLOSE_CONNECTION));
+				logger.error("Error when try to close connection");
 				e.printStackTrace();
 			}
 		}
-
+		
 		return allowedValues;
 	}
-
+	
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#getConnetion()
+	 * @see org.alfresco.custom.database.Database#getConnetion()
 	 */
 	@Override
 	public void getConnetion() {
 		try {
 			Class.forName(this.driver);
+			logger.debug("Driver Loaded successfully");
+
 			this.conn = DriverManager.getConnection(this.url, this.user, this.pwd);
+			logger.debug("Connection created successfully");
+
 		} catch (ClassNotFoundException e) {
-			logger.error(msg.getMessage(Msg.ERROR_LOAD_DRIVER, driver));
+			logger.error("Error when try to load driver. Check if JDBC are in the classpath");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			Object[] obj = new Object[] { this.url, this.user, this.pwd };
-			logger.error(msg.getMessage(Msg.ERROR_OPEN_CONNECTION, obj));
+			logger.error("Error when try to create connection. Check if the parameters [url="
+					+ this.url
+					+ " user="
+					+ this.user
+					+ " pwd="
+					+ this.pwd
+					+ "]");
 			e.printStackTrace();
 		}
 
 	}
 
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#setConnectionUrl(java.lang.String)
+	 * @see org.alfresco.custom.database.Database#setConnectionUrl(java.lang.String)
 	 */
 	@Override
 	public void setConnectionUrl(String url) {
@@ -118,7 +124,7 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#setDatabaseDriver(java.lang.String)
+	 * @see org.alfresco.custom.database.Database#setDatabaseDriver(java.lang.String)
 	 */
 	@Override
 	public void setDatabaseDriver(String driver) {
@@ -126,7 +132,7 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#setUser(java.lang.String)
+	 * @see org.alfresco.custom.database.Database#setUser(java.lang.String)
 	 */
 	@Override
 	public void setUser(String user) {
@@ -134,11 +140,10 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-	 * @see org.alfresco.custom.constraint.db.Database#setPwd(java.lang.String)
+	 * @see org.alfresco.custom.database.Database#setPwd(java.lang.String)
 	 */
 	@Override
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
-
 }

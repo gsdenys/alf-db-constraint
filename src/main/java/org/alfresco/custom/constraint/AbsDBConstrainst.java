@@ -54,11 +54,6 @@ public abstract class AbsDBConstrainst extends ListOfValuesConstraint {
 	public final static String POSITION = "position";
 
 	/**
-	 * Message object
-	 */
-	private Msg msg = Msg.getInstance();
-
-	/**
 	 * Alfresco properties reader
 	 */
 	private Properties properties;
@@ -198,8 +193,7 @@ public abstract class AbsDBConstrainst extends ListOfValuesConstraint {
 			super.setAllowedValues(loadDB());
 			lastUpdateTime = System.currentTimeMillis();
 
-			int nElements = super.getAllowedValues().size();
-			logger.debug(msg.getMessage(Msg.SUCCESS_UPDATE_ALLOWED_VALUES, nElements));
+			logger.debug("Update Allowed Values. [ numberOfElements=" + super.getAllowedValues().size() + ", timeToUpdate=" + lastUpdateTime + "]");
 		}
 
 		return super.getAllowedValues();
