@@ -25,9 +25,9 @@ The 'DBLIST' type constraint creation are near 'LIST' constraint type. The mainl
 
 As a main parameter to be used in this kind of constraints, the SQL query is the only one every required. Following you can see one 'DBLIST' constraint example that use as constraint the UUID extracted from alf_node alfresco database table.
 
-      <constraint  name="custom:noDoAlfresco"  type="DBLIST" >
-			<parameter  name="query" ><value>SELECT uuid FROM alf_node</value></parameter>
-		</constraint>
+        <constraint  name="custom:noDoAlfresco"  type="DBLIST" >
+	        <parameter  name="query" ><value>SELECT uuid FROM alf_node</value></parameter>
+        </constraint>
            
 
 
